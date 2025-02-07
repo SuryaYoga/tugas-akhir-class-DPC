@@ -1,0 +1,124 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+
+struct Rumus {
+    string nama;
+    string variabel[3];
+    int jumlahVariabel;
+};
+
+int main() {
+    Rumus bangunDatar[4] = {
+        {"Persegi", {"sisi", "", ""}, 1},
+        {"Persegi Panjang", {"panjang", "lebar", ""}, 2},
+        {"Segitiga", {"alas", "tinggi", ""}, 2},
+        {"Lingkaran", {"jari-jari", "", ""}, 1}
+    };
+
+    Rumus bangunRuang[4] = {
+        {"Kubus", {"sisi", "", ""}, 1},
+        {"Balok", {"panjang", "lebar", "tinggi"}, 3},
+        {"Prisma Segitiga", {"alas segitiga", "tinggi segitiga", "tinggi prisma"}, 3},
+        {"Tabung", {"jari-jari", "tinggi", ""}, 2}
+    };
+
+    double nilai[3];
+
+    while (true) {
+        cout << "\nKALKULATOR BANGUN DATAR DAN RUANG\n";
+        cout << "1. Bangun Datar\n";
+        cout << "2. Bangun Ruang\n";
+        cout << "3. Keluar\n";
+        cout << "Pilih menu (1-3): ";
+        
+        int pilihan;
+        cin >> pilihan;
+        
+        if (pilihan == 3) {
+            cout << "Terima kasih telah menggunakan kalkulator ini!\n";
+            break;
+        }
+        
+        if (pilihan == 1) {
+            cout << "\nBANGUN DATAR:\n";
+            for (int i = 0; i < 4; i++) {
+                cout << i + 1 << ". " << bangunDatar[i].nama << endl;
+            }
+            
+            cout << "Pilih bangun datar (1-4): ";
+            int pilihBangun;
+            cin >> pilihBangun;
+            pilihBangun--; 
+            
+            if (pilihBangun >= 0 && pilihBangun < 4) {
+                for (int i = 0; i < bangunDatar[pilihBangun].jumlahVariabel; i++) {
+                    cout << "Masukkan " << bangunDatar[pilihBangun].variabel[i] << ": ";
+                    cin >> nilai[i];
+                }
+                
+                double hasil;
+                switch (pilihBangun) {
+                    case 0: 
+                        hasil = nilai[0] * nilai[0];
+                        break;
+                    case 1: 
+                        hasil = nilai[0] * nilai[1];
+                        break;
+                    case 2: 
+                        hasil = 0.5 * nilai[0] * nilai[1];
+                        break;
+                    case 3: 
+                        hasil = M_PI * nilai[0] * nilai[0];
+                        break;
+                }
+                cout << "Luas " << bangunDatar[pilihBangun].nama << ": " << hasil << endl;
+            } else {
+                cout << "Pilihan tidak valid!\n";
+            }
+        }
+        else if (pilihan == 2) {
+            cout << "\nBANGUN RUANG:\n";
+            for (int i = 0; i < 4; i++) {
+                cout << i + 1 << ". " << bangunRuang[i].nama << endl;
+            }
+            
+            cout << "Pilih bangun ruang (1-4): ";
+            int pilihBangun;
+            cin >> pilihBangun;
+            pilihBangun--; 
+            
+            if (pilihBangun >= 0 && pilihBangun < 4) {
+                for (int i = 0; i < bangunRuang[pilihBangun].jumlahVariabel; i++) {
+                    cout << "Masukkan " << bangunRuang[pilihBangun].variabel[i] << ": ";
+                    cin >> nilai[i];
+                }
+                
+                double hasil;
+                switch (pilihBangun) {
+                    case 0: 
+                        hasil = nilai[0] * nilai[0] * nilai[0];
+                        break;
+                    case 1: 
+                        hasil = nilai[0] * nilai[1] * nilai[2];
+                        break;
+                    case 2: 
+                        hasil = 0.5 * nilai[0] * nilai[1] * nilai[2];
+                        break;
+                    case 3: 
+                        hasil = M_PI * nilai[0] * nilai[0] * nilai[1];
+                        break;
+                }
+                cout << "Volume " << bangunRuang[pilihBangun].nama << ": " << hasil << endl;
+            } else {
+                cout << "Pilihan tidak valid!\n";
+            }
+        }
+        else {
+            cout << "Pilihan tidak valid!\n";
+        }
+    }
+    
+    return 0;
+}
