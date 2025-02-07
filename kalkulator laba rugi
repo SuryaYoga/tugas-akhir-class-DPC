@@ -1,0 +1,163 @@
+#include <iostream>
+#include <iomanip>
+#include <string>
+using namespace std;
+
+const int MAX_TRANSAKSI = 100;
+
+struct Transaksi {
+    string tanggal;
+    string kategori;
+    double jumlah;
+    bool isPemasukan;
+};
+
+bool tambahTransaksi(Transaksi daftarTransaksi[], int& jumlahTransaksi) {
+    if (jumlahTransaksi >= MAX_TRANSAKSI) {
+        cout << "\nPenyimpanan penuh! Tidak bisa menambah transaksi baru.\n";
+        return false;
+    }
+    
+    char tipe;
+    cout << "\nMasukkan tanggal (DD/MM/YYYY): ";
+    cin >> daftarTransaksi[jumlahTransaksi].tanggal;
+    
+    cout << "Tipe transaksi (p = pemasukan, k = pengeluaran): ";
+    cin >> tipe;
+    daftarTransaksi[jumlahTransaksi].isPemasukan = (tipe == 'p' || tipe == 'P');
+    
+    cout << "Masukkan kategori: ";
+    cin.ignore();
+    getline(cin, daftarTransaksi[jumlahTransaksi].kategori);
+    
+    cout << "Masukkan jumlah: Rp ";
+    cin >> daftarTransaksi[jumlahTransaksi].jumlah;
+    
+    jumlahTransaksi++;
+    cout << "\nTransaksi berhasil ditambahkan!\n";
+    return true;
+}
+
+struct TotalKategori {
+    string kategori;
+    double total;
+};
+
+void hitungTotalKategori(const Transaksi daftarTransaksi[], int jumlahTransaksi, bool isPemasukan) {
+    TotalKategori totalKategori[MAX_TRANSAKSI];
+    int jumlahKategori = 0;
+    double grandTotal = 0;
+    
+    for (int i = 0; i < jumlahTransaksi; i++) {
+        if (daftarTransaksi[i].isPemasukan == isPemasukan) {
+            bool found = false;
+            for (int j = 0; j < jumlahKategori; j++) {
+                if (totalKategori[j].kategori == daftarTransaksi[i].kategori) {
+                    totalKategori[j].total += daftarTransaksi[i].jumlah;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                totalKategori[jumlahKategori].kategori = daftarTransaksi[i].kategori;
+                totalKategori[jumlahKategori].total = daftarTransaksi[i].jumlah;
+                jumlahKategori++;
+            }
+            grandTotal += daftarTransaksi[i].jumlah;
+        }
+    }
+    
+    if (jumlahKategori == 0) {
+        cout << "Tidak ada data " << (isPemasukan ? "pemasukan" : "pengeluaran") << endl;
+        return;
+    }
+    
+    cout << "\nTotal per kategori " << (isPemasukan ? "pemasukan" : "pengeluaran") << ":\n";
+    for (int i = 0; i < jumlahKategori; i++) {
+        double persentase = (totalKategori[i].total / grandTotal) * 100;
+        cout << totalKategori[i].kategori << ": Rp " << fixed << setprecision(2) 
+             << totalKategori[i].total << " (" << persentase << "%)\n";
+    }
+    cout << "Total: Rp " << grandTotal << endl;
+}
+
+void tampilkanLaporan(const Transaksi daftarTransaksi[], int jumlahTransaksi) {
+    if (jumlahTransaksi == 0) {
+        cout << "\nBelum ada transaksi yang dicatat.\n";
+        return;
+    }
+    
+    cout << "\nLAPORAN KEUANGAN\n";
+    cout << "================\n\n";
+    
+    cout << "Daftar Transaksi:\n";
+    cout << setw(12) << "Tanggal" << setw(15) << "Kategori" 
+         << setw(15) << "Tipe" << setw(15) << "Jumlah" << endl;
+    cout << string(57, '-') << endl;
+    
+    double totalPemasukan = 0, totalPengeluaran = 0;
+    
+    for (int i = 0; i < jumlahTransaksi; i++) {
+        cout << setw(12) << daftarTransaksi[i].tanggal 
+             << setw(15) << daftarTransaksi[i].kategori
+             << setw(15) << (daftarTransaksi[i].isPemasukan ? "Pemasukan" : "Pengeluaran")
+             << setw(15) << daftarTransaksi[i].jumlah << endl;
+             
+        if (daftarTransaksi[i].isPemasukan) {
+            totalPemasukan += daftarTransaksi[i].jumlah;
+        } else {
+            totalPengeluaran += daftarTransaksi[i].jumlah;
+        }
+    }
+    
+    cout << "\nRingkasan:\n";
+    cout << "Total Pemasukan  : Rp " << totalPemasukan << endl;
+    cout << "Total Pengeluaran: Rp " << totalPengeluaran << endl;
+    cout << "Saldo           : Rp " << (totalPemasukan - totalPengeluaran) << endl;
+    
+    
+    cout << "\nDetail per Kategori:\n";
+    hitungTotalKategori(daftarTransaksi, jumlahTransaksi, true);  
+    hitungTotalKategori(daftarTransaksi, jumlahTransaksi, false); 
+}
+
+int main() {
+    Transaksi daftarTransaksi[MAX_TRANSAKSI];
+    int jumlahTransaksi = 0;
+    int pilihan;
+    
+    while (true) {
+        cout << "\nPENCATAT KEUANGAN\n";
+        cout << "1. Tambah Transaksi\n";
+        cout << "2. Lihat Laporan\n";
+        cout << "3. Reset Data\n";
+        cout << "4. Keluar\n";
+        cout << "Pilih menu (1-4): ";
+        
+        cin >> pilihan;
+        
+        switch (pilihan) {
+            case 1:
+                tambahTransaksi(daftarTransaksi, jumlahTransaksi);
+                break;
+                
+            case 2:
+                tampilkanLaporan(daftarTransaksi, jumlahTransaksi);
+                break;
+                
+            case 3:
+                jumlahTransaksi = 0;
+                cout << "\nSemua data telah direset!\n";
+                break;
+                
+            case 4:
+                cout << "\nTerima kasih telah menggunakan program ini!\n";
+                return 0;
+                
+            default:
+                cout << "\nPilihan tidak valid!\n";
+        }
+    }
+    
+    return 0;
+}
